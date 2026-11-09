@@ -1,35 +1,34 @@
 // app/meetings/[id]/page.tsx
-import MeetingDetail from '@/components/MeetingDetail';
-import type { SacramentMeeting } from '@/lib/types';
+import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
+import { getMeetingById } from '@/lib/meetings-db';
+import MeetingDetail from '@/components/MeetingDetail';
 
-async function getMeeting(id: string): Promise<SacramentMeeting | null> {
-    try {
-        const res = await fetch(`http://localhost:3000/api/meetings/${id}`, { cache: 'no-store' });
-        if (res.status === 404) return null;
-        if (!res.ok) throw new Error('Failed to fetch meeting');
-        return res.json();
-    } catch {
-        const { getMeetingById } = await import('@/lib/meetings-db');
-        const numericId = Number(id);
-        return isNaN(numericId) ? null : getMeetingById(numericId);
+async function MeetingContent({ params }: { params: Promise<{ id: string }> }) {
+    const resolvedParams = await params;
+    const id = Number(resolvedParams.id);
+
+    if (isNaN(id)) {
+        notFound();
     }
-}
 
-export default async function MeetingDetailPage({
-    params,
-}: {
-    params: { id: string };
-}) {
-    const meeting = await getMeeting(params.id);
+    const meeting = getMeetingById(id);
 
     if (!meeting) {
         notFound();
     }
 
+    return <MeetingDetail meeting={meeting} />;
+}
+
+export default function MeetingDetailPage({
+    params,
+}: {
+    params: Promise<{ id: string }>;
+}) {
     return (
-        <div>
-            <MeetingDetail meeting={meeting} />
-        </div>
+        <Suspense fallback={<div className="p-4 text-gray-500">Loading meeting details...</div>}>
+            <MeetingContent params={params} />
+        </Suspense>
     );
 }

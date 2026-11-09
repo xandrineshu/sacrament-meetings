@@ -1,5 +1,6 @@
 // components/MeetingDetail.tsx
-import type { SacramentMeeting } from '@/lib/types';
+'use client';
+import { SacramentMeeting } from '@/lib/types';
 
 export default function MeetingDetail({ meeting }: { meeting: SacramentMeeting }) {
     return (
