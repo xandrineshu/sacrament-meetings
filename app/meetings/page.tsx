@@ -1,35 +1,55 @@
 // app/meetings/page.tsx
-import MeetingCard from '@/components/MeetingCard';
-import type { SacramentMeeting } from '@/lib/types';
+import Link from 'next/link';
+import { getMeetings } from '@/lib/meetings-db';
 
-async function getMeetingsData(): Promise<SacramentMeeting[]> {
-    // Relative or absolute fetch for server components in Next.js App Router
-    try {
-        const res = await fetch('http://localhost:3000/api/meetings', { cache: 'no-store' });
-        if (!res.ok) throw new Error('Failed to fetch meetings');
-        return res.json();
-    } catch {
-        // Fallback if local fetch fails during build/ssr
-        const { getMeetings } = await import('@/lib/meetings-db');
-        return getMeetings();
-    }
-}
-
-export default async function MeetingsPage() {
-    const meetings = await getMeetingsData();
+export default function MeetingsPage() {
+    const meetings = getMeetings();
 
     return (
-        <div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Sacrament Meeting Schedule</h2>
-            {meetings.length === 0 ? (
-                <p className="text-gray-500">No meetings found.</p>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {meetings.map((meeting) => (
-                        <MeetingCard key={meeting.id} meeting={meeting} />
-                    ))}
-                </div>
-            )}
+        <div className="space-y-6">
+            {/* Page Heading */}
+            <h1 className="text-2xl font-bold text-[#293681] tracking-tight">
+                Sacrament Meeting Schedule
+            </h1>
+
+            {/* Grid of Meeting Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {meetings.map((meeting) => (
+                    <div
+                        key={meeting.id}
+                        className="bg-white rounded-xl p-6 shadow-sm border border-[#95CCDD]/50 hover:border-[#4274D9] transition-all flex flex-col justify-between"
+                    >
+                        <div>
+                            <div className="flex justify-between items-center mb-4">
+                                <span className="uppercase text-xs font-bold tracking-wider bg-[#D0E7E6] text-[#293681] px-3 py-1 rounded-full">
+                                    {meeting.meetingType ?? 'REGULAR'}
+                                </span>
+                                <span className="text-xs font-medium text-gray-500">
+                                    {meeting.date}
+                                </span>
+                            </div>
+
+                            <div className="space-y-1 mb-6 text-sm">
+                                <p className="text-gray-700">
+                                    <span className="font-semibold text-[#293681]">Presiding:</span>{' '}
+                                    {meeting.presiding}
+                                </p>
+                                <p className="text-gray-700">
+                                    <span className="font-semibold text-[#293681]">Conducting:</span>{' '}
+                                    {meeting.conducting}
+                                </p>
+                            </div>
+                        </div>
+
+                        <Link
+                            href={`/meetings/${meeting.id}`}
+                            className="w-full block text-center py-2.5 px-4 rounded-lg bg-[#4274D9] hover:bg-[#293681] text-white font-medium text-sm transition-colors shadow-sm"
+                        >
+                            View Program
+                        </Link>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }

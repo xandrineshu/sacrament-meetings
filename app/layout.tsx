@@ -1,16 +1,6 @@
 // app/layout.tsx
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import './globals.css';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-
-const inter = Inter({ subsets: ['latin'] });
-
-export const metadata: Metadata = {
-  title: 'Sacrament Meeting Planner',
-  description: 'Plan and review sacrament meeting agendas',
-};
+import Navbar from '@/components/NavBar';
 
 export default function RootLayout({
   children,
@@ -19,12 +9,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-gray-50 text-gray-900 min-h-screen flex flex-col`}>
-        <Header />
-        <main className="grow container mx-auto px-4 py-6">
+      <body className="bg-[#D0E7E6]/30 text-gray-900 min-h-screen flex flex-col">
+        <Navbar />
+        <main className="grow max-w-5xl w-full mx-auto p-4 md:p-6">
           {children}
         </main>
-        <Footer />
+        <footer className="bg-[#293681] text-white text-center py-4 text-sm mt-auto">
+          © 2026 Sacrament Meeting Planner. Built with Next.js & Tailwind CSS.
+        </footer>
       </body>
     </html>
   );
