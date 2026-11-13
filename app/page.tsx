@@ -12,8 +12,9 @@ export default function HomePage() {
           <Image
             src="/chapel-hero.jpg"
             alt="Sacrament Meeting Chapel Sanctuary"
-            fill
-            className="object-cover opacity-95"
+            width={1200}
+            height={800}
+            className="w-full h-full object-cover opacity-95"
             priority
           />
           <div className="absolute inset-0 bg-linear-to-t from-[#293681] via-[#293681]/40 to-transparent" />

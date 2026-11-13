@@ -1,4 +1,5 @@
-export type MeetingType = 'regular' | 'fast-and-testimony' | 'stake-conference' | 'special';
+// lib/types.ts
+export type MeetingType = 'testimony' | 'regular' | 'stake' | 'general' | 'special';
 
 export interface Hymn {
     number: number;

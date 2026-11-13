@@ -43,7 +43,7 @@ const meetings: SacramentMeeting[] = [
     {
         id: 3,
         date: '2026-05-17',
-        meetingType: 'stake-conference',
+        meetingType: 'stake',
         presiding: 'President Johnson',
         conducting: 'President Harris',
         openingHymn: { number: 19, title: 'We Thank Thee, O God, for a Prophet' },
@@ -58,6 +58,41 @@ const meetings: SacramentMeeting[] = [
         closingHymn: { number: 27, title: 'Praise to the Man' },
         closingPrayer: 'Sister Lopez',
         announcements: ['No regular ward Sunday School next week due to Stake Conference schedule.']
+    },
+    {
+        id: 4,
+        date: '2026-05-24',
+        meetingType: 'testimony',
+        presiding: 'Bishop Smith',
+        conducting: 'Brother Jones',
+        openingHymn: { number: 134, title: 'I Believe in Christ' },
+        openingPrayer: 'Sister Park',
+        wardBusiness: [],
+        stakeBusiness: false,
+        sacramentHymn: { number: 175, title: 'God, Our Father, Hear Us Pray' },
+        speakers: [],
+        closingHymn: { number: 219, title: 'Because I Have Been Given Much' },
+        closingPrayer: 'Brother Alvarez',
+        announcements: ['Fast and testimony meeting today.']
+    },
+    {
+        id: 5,
+        date: '2026-05-31',
+        meetingType: 'special',
+        presiding: 'Bishop Smith',
+        conducting: 'Brother Miller',
+        openingHymn: { number: 107, title: 'The Lord Is My Light' },
+        openingPrayer: 'Brother Lee',
+        wardBusiness: [{ description: 'High Council visit and ward report' }],
+        stakeBusiness: false,
+        sacramentHymn: { number: 193, title: 'I Stand All Amazed' },
+        speakers: [
+            { name: 'Brother Vance', topic: 'Missionary Preparation', type: 'speaker' },
+            { name: 'Sister Vance', topic: 'Finding Joy in Service', type: 'speaker' }
+        ],
+        closingHymn: { number: 252, title: 'Put Your Shoulder to the Wheel' },
+        closingPrayer: 'Sister Gomez',
+        announcements: ['Special missionary farewell sacrament meeting.']
     }
 ];
 
