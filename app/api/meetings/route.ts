@@ -1,11 +1,24 @@
-// app/api/meetings/route.ts
 import { NextResponse } from 'next/server';
-import { getMeetings } from '@/lib/meetings-db';
+import { getMeetingByDate, getMeetings } from '@/lib/meetings-db';
 
 export async function GET(request: Request) {
-    const url = new URL(request.url);
-    const date = url.searchParams.get('date'); // e.g. "2026-05-03" or null
+    try {
+        const { searchParams } = new URL(request.url);
+        const query = searchParams.get('query') || '';
+        const date = searchParams.get('date');
 
-    const meetings = getMeetings(date);
-    return NextResponse.json(meetings);
+        if (date) {
+            const meeting = await getMeetingByDate(date);
+            return NextResponse.json(meeting ? [meeting] : []);
+        }
+
+        const rawPage = Number.parseInt(searchParams.get('page') ?? '1', 10);
+        const page = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1;
+
+        const meetings = await getMeetings(query, page);
+        return NextResponse.json(meetings);
+    } catch (error) {
+        void error;
+        return NextResponse.json({ error: 'Failed to fetch meetings' }, { status: 500 });
+    }
 }

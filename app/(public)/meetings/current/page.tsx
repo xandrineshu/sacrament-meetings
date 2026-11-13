@@ -1,29 +1,31 @@
-// app/meetings/current/page.tsx
 import { redirect } from 'next/navigation';
-import { getMeetings } from '@/lib/meetings-db';
+import { getMeetingByDate, getMeetings } from '@/lib/meetings-db';
 import { connection } from 'next/server';
 
 export default async function CurrentMeetingPage() {
-    // Await connection to signal to Next.js that this page is dynamic at request-time
     await connection();
 
     const today = new Date();
-    const dayOfWeek = today.getDay(); // 0 (Sun) through 6 (Sat)
+    const dayOfWeek = today.getDay();
     const sunday = new Date(today);
-    sunday.setDate(today.getDate() - dayOfWeek); // Roll back to Sunday
+    sunday.setDate(today.getDate() - dayOfWeek);
 
-    // Format as 'YYYY-MM-DD'
     const year = sunday.getFullYear();
     const month = String(sunday.getMonth() + 1).padStart(2, '0');
     const day = String(sunday.getDate()).padStart(2, '0');
     const sundayString = `${year}-${month}-${day}`;
 
-    const meetings = getMeetings(sundayString);
+    const meeting = await getMeetingByDate(sundayString);
 
-    if (meetings.length > 0) {
-        redirect(`/meetings/${meetings[0].id}`);
+    if (meeting) {
+        // Redirect with a query flag so the UI knows this is the current Sunday!
+        redirect(`/meetings/${meeting.id}?current=true`);
     }
 
-    // Fallback if no matching meeting exists for this Sunday
+    const meetings = await getMeetings();
+    if (meetings.length > 0) {
+        redirect(`/meetings/${meetings[0].id}?current=true`);
+    }
+
     redirect('/meetings');
 }
