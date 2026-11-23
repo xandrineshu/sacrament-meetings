@@ -1,8 +1,9 @@
+import { Suspense } from 'react';
+import { notFound } from 'next/navigation';
 import { getMeetingById } from '@/lib/meetings-db';
 import MeetingDetail from '@/components/MeetingDetail';
-import { notFound } from 'next/navigation';
 
-export default async function MeetingDetailPage({
+async function MeetingDetailContent({
     params,
 }: {
     params: Promise<{ id: string }>;
@@ -10,7 +11,7 @@ export default async function MeetingDetailPage({
     const { id } = await params;
     const numericId = Number(id);
 
-    if (isNaN(numericId)) {
+    if (!Number.isInteger(numericId) || numericId <= 0) {
         notFound();
     }
 
@@ -20,9 +21,19 @@ export default async function MeetingDetailPage({
         notFound();
     }
 
+    return <MeetingDetail meeting={meeting} />;
+}
+
+export default function MeetingDetailPage({
+    params,
+}: {
+    params: Promise<{ id: string }>;
+}) {
     return (
         <div className="space-y-6 max-w-3xl mx-auto py-6">
-            <MeetingDetail meeting={meeting} />
+            <Suspense fallback={<p className="text-gray-600">Loading meeting program...</p>}>
+                <MeetingDetailContent params={params} />
+            </Suspense>
         </div>
     );
 }

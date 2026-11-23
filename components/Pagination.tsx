@@ -15,13 +15,28 @@ export function Pagination({ totalPages }: { totalPages: number }) {
     }
 
     return (
-        <nav aria-label="Pagination">
+        <nav
+            aria-label="Pagination"
+            className="mt-16 flex items-center justify-center gap-4"
+        >
             {currentPage > 1 && (
-                <Link href={createPageURL(currentPage - 1)}>Previous</Link>
+                <Link
+                    href={createPageURL(currentPage - 1)}
+                    className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                >
+                    Previous
+                </Link>
             )}
-            <span>Page {currentPage} of {totalPages}</span>
+            <span className="text-sm font-medium text-gray-700">
+                Page {currentPage} of {totalPages}
+            </span>
             {currentPage < totalPages && (
-                <Link href={createPageURL(currentPage + 1)}>Next</Link>
+                <Link
+                    href={createPageURL(currentPage + 1)}
+                    className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                >
+                    Next
+                </Link>
             )}
         </nav>
     );

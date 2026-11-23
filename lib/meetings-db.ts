@@ -3,7 +3,7 @@ import type { MeetingType, SacramentMeeting } from './types';
 
 const sql = neon(process.env.DATABASE_URL!);
 
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = 6;
 
 type MeetingRow = {
     id: number;
@@ -169,20 +169,122 @@ export async function getMeetingById(
 export async function addMeeting(
     data: Omit<SacramentMeeting, 'id'>
 ): Promise<SacramentMeeting> {
-    void data;
-    throw new Error('addMeeting: database implementation coming in Week 04');
+    const normalized = normalizeMeeting({
+        id: 0,
+        ...data,
+        announcements: data.announcements ?? [],
+    });
+
+    const rows = await sql`
+    INSERT INTO meetings (
+      date,
+      meeting_type,
+      presiding,
+      conducting,
+      announcements,
+      opening_hymn,
+      opening_prayer,
+      ward_business,
+      stake_business,
+      sacrament_hymn,
+      speakers,
+      closing_hymn,
+      closing_prayer
+    )
+    VALUES (
+      ${normalized.date},
+      ${normalized.meetingType},
+      ${normalized.presiding},
+      ${normalized.conducting},
+      ${normalized.announcements},
+      ${JSON.stringify(normalized.openingHymn)}::jsonb,
+      ${normalized.openingPrayer},
+      ${JSON.stringify(normalized.wardBusiness)}::jsonb,
+      ${normalized.stakeBusiness},
+      ${JSON.stringify(normalized.sacramentHymn)}::jsonb,
+      ${JSON.stringify(normalized.speakers)}::jsonb,
+      ${JSON.stringify(normalized.closingHymn)}::jsonb,
+      ${normalized.closingPrayer}
+    )
+    RETURNING
+      id,
+      to_char(date, 'YYYY-MM-DD') AS "date",
+      meeting_type                AS "meetingType",
+      presiding, conducting, announcements,
+      opening_hymn                AS "openingHymn",
+      opening_prayer              AS "openingPrayer",
+      ward_business               AS "wardBusiness",
+      stake_business              AS "stakeBusiness",
+      sacrament_hymn              AS "sacramentHymn",
+      speakers,
+      closing_hymn                AS "closingHymn",
+      closing_prayer              AS "closingPrayer"
+  ` as MeetingRow[];
+
+    if (!rows[0]) {
+        throw new Error('Failed to insert meeting record.');
+    }
+
+    return normalizeMeeting(rows[0]);
 }
 
 export async function updateMeeting(
     id: number,
     updates: Partial<SacramentMeeting>
 ): Promise<SacramentMeeting | null> {
-    void id;
-    void updates;
-    throw new Error('updateMeeting: database implementation coming in Week 04');
+    const existing = await getMeetingById(id);
+    if (!existing) {
+        return null;
+    }
+
+    const merged = normalizeMeeting({
+        ...existing,
+        ...updates,
+        id,
+        announcements: updates.announcements ?? existing.announcements ?? [],
+    });
+
+    const rows = await sql`
+    UPDATE meetings
+    SET
+      date           = ${merged.date},
+      meeting_type   = ${merged.meetingType},
+      presiding      = ${merged.presiding},
+      conducting     = ${merged.conducting},
+      announcements  = ${merged.announcements},
+      opening_hymn   = ${JSON.stringify(merged.openingHymn)}::jsonb,
+      opening_prayer = ${merged.openingPrayer},
+      ward_business  = ${JSON.stringify(merged.wardBusiness)}::jsonb,
+      stake_business = ${merged.stakeBusiness},
+      sacrament_hymn = ${JSON.stringify(merged.sacramentHymn)}::jsonb,
+      speakers       = ${JSON.stringify(merged.speakers)}::jsonb,
+      closing_hymn   = ${JSON.stringify(merged.closingHymn)}::jsonb,
+      closing_prayer = ${merged.closingPrayer}
+    WHERE id = ${id}
+    RETURNING
+      id,
+      to_char(date, 'YYYY-MM-DD') AS "date",
+      meeting_type                AS "meetingType",
+      presiding, conducting, announcements,
+      opening_hymn                AS "openingHymn",
+      opening_prayer              AS "openingPrayer",
+      ward_business               AS "wardBusiness",
+      stake_business              AS "stakeBusiness",
+      sacrament_hymn              AS "sacramentHymn",
+      speakers,
+      closing_hymn                AS "closingHymn",
+      closing_prayer              AS "closingPrayer"
+  ` as MeetingRow[];
+
+    return rows[0] ? normalizeMeeting(rows[0]) : null;
 }
 
 export async function deleteMeeting(id: number): Promise<boolean> {
-    void id;
-    throw new Error('deleteMeeting: database implementation coming in Week 04');
+    const rows = await sql`
+    DELETE FROM meetings
+    WHERE id = ${id}
+    RETURNING id
+  ` as Array<{ id: number }>;
+
+    return rows.length > 0;
 }

@@ -13,6 +13,7 @@ export default function NavLinks() {
         { name: 'Home', href: '/' },
         { name: 'All Meetings', href: '/meetings' },
         { name: 'Current Sunday', href: '/meetings/current' },
+        {name: 'Create Meeting', href: '/meetings/new' },
     ];
 
     return (
@@ -34,6 +35,7 @@ export default function NavLinks() {
                     <Link
                         key={link.name}
                         href={link.href}
+                        aria-current={isActive ? 'page' : undefined}
                         className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive
                                 ? 'bg-blue-600 text-white'
                                 : 'text-gray-700 hover:bg-gray-200'

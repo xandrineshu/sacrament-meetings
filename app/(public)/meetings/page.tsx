@@ -68,12 +68,27 @@ export default async function MeetingsPage(props: {
                 <MeetingSearch />
             </div>
 
-            {/* Grid of Meeting Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {meetings.map((meeting) => (
-                    <MeetingCard key={meeting.id} meeting={meeting} />
-                ))}
-            </div>
+            {/* Grid of Meeting Cards or Empty State */}
+            {meetings.length === 0 ? (
+                <div
+                    role="status"
+                    aria-live="polite"
+                    className="mb-16 rounded-lg border border-gray-200 bg-white p-8 text-center shadow-sm"
+                >
+                    <p className="text-base font-medium text-gray-800">
+                        No sacrament meetings found{query ? ` for "${query}"` : ''}.
+                    </p>
+                    <p className="mt-1 text-sm text-gray-500">
+                        Try a different search term or clear your search filter.
+                    </p>
+                </div>
+            ) : (
+                <div className="mb-16 grid grid-cols-1 gap-6 md:grid-cols-2">
+                    {meetings.map((meeting) => (
+                        <MeetingCard key={meeting.id} meeting={meeting} />
+                    ))}
+                </div>
+            )}
 
             {/* Pagination Controls */}
             <Pagination totalPages={totalPages} currentPage={currentPage} query={query} />
